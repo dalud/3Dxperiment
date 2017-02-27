@@ -11,17 +11,34 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 
 public class MyInput implements InputProcessor {
     PerspectiveCamera cam;
-    int Xdown, Ydown;
+    int width, height, action, finger, XAmplitude, YAmplitude, minYAmp;
+    boolean turn;
+    int[] pointerXCoords, pointerYCoords;
 
     public MyInput(PerspectiveCamera cam){
         this.cam = cam;
+        width = Gdx.graphics.getWidth();
+        height = Gdx.graphics.getHeight();
+        pointerXCoords = new int[2];
+        pointerYCoords = new int[2];
+        minYAmp = 100;
     }
 
     public void poll(){
+        if(finger < 1) {
+            turn = false;
+            YAmplitude = XAmplitude = 0;
+        }
+
+        //NAPPI POHJASSA (ei toimi atm, koska Amp)
         if(Gdx.input.isKeyPressed(Input.Keys.W)) move(1);
-        if(Gdx.input.isKeyPressed(Input.Keys.S)) move(3);
-        if(Gdx.input.isKeyPressed(Input.Keys.A)) cam.rotate(1, 0, 1, 0);
-        if(Gdx.input.isKeyPressed(Input.Keys.D)) cam.rotate(1, 0, -1, 0);
+        if(Gdx.input.isKeyPressed(Input.Keys.A)) move(2);
+        if(Gdx.input.isKeyPressed(Input.Keys.S)) move(1);
+        if(Gdx.input.isKeyPressed(Input.Keys.D)) move(2);
+
+        //TOUCH
+        if(turn) move(2);
+        move(action);
     }
 
     @Override
@@ -30,17 +47,18 @@ public class MyInput implements InputProcessor {
     }
 
     private void move(int direction) {
-        //1 = FORWARD
-        //3 = BACK
+        //1 = FORWARD or BACK
+        //2 = TURN LEFT or RIGHT
 
         switch (direction) {
             case 1:
-                if(cam.position.len2() < 130) cam.translate(cam.direction.x / 15, 0, cam.direction.z / 15);
+                if(cam.position.len2() < 130) cam.translate(cam.direction.x*YAmplitude/4000, 0, cam.direction.z*YAmplitude/4000);
                 else StepBack();
                 break;
-            case 3:
-                if(cam.position.len2() < 130) cam.translate(-cam.direction.x / 15, 0, -cam.direction.z / 15);
-                else StepBack();
+            case 2:
+                cam.rotate((float)XAmplitude/200, 0, -1, 0);
+                break;
+            default:
                 break;
         }
     }
@@ -57,10 +75,8 @@ public class MyInput implements InputProcessor {
         cam.translate(x, 0, z);
     }
 
-
     @Override
     public boolean keyUp(int keycode) {
-
         return false;
     }
 
@@ -71,29 +87,38 @@ public class MyInput implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Xdown = screenX;
-        Ydown = screenY;
+        finger++;
+        YAmplitude = minYAmp;
+        action = 1;
+
+        pointerXCoords[pointer] = screenX;
+        pointerYCoords[pointer] = screenY;
+
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        finger--;
+
+        if(finger < 1) {
+            action = 0;
+            turn = false;
+        }
+
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        XAmplitude = screenX - pointerXCoords[pointer];
 
+        int deltaY = pointerYCoords[pointer] - screenY;
+        if(deltaY > 0) YAmplitude = minYAmp + deltaY;
+        else if(deltaY < -10) YAmplitude = deltaY;
 
-        float deltaX = (float)(screenX - Xdown);
-        float deltaY = (float)(screenY - Ydown);
-
-        cam.rotate(1, 0, deltaX/10, 0);
-        if(deltaY > 0) move(1);
-        else if(deltaY < 0) move(3);
-
-        Xdown = screenX;
-        Ydown = screenY;
+        if(screenY != 0) action = 1;
+        if(screenX != 0) turn = true;
 
         return false;
     }
