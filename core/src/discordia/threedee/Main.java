@@ -47,6 +47,7 @@ public class Main extends ApplicationAdapter {
 
 		sky = loader.loadModel(Gdx.files.internal("sky/sky.obj"));
 		skyIns = new ModelInstance(sky);
+		skyIns.transform.scale(-100, -100, -100); //EI SKAALAUDU EI (täytynee kääntää g3dj:ksi)
 		skyIns.transform.setToTranslation(0, -17, 0);
 
 		modelBatch = new ModelBatch();
