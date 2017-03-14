@@ -12,7 +12,9 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
+import com.badlogic.gdx.utils.UBJsonReader;
 
 
 public class Main extends ApplicationAdapter {
@@ -30,7 +32,7 @@ public class Main extends ApplicationAdapter {
 		cam.position.set(1, 2.1f, 5);
 		cam.lookAt(0, 3, 0);
 		cam.near = .1f;
-		cam.far = 300f;
+		cam.far = 500f;
 		cam.update();
 
 		input = new MyInput(cam);
@@ -45,10 +47,12 @@ public class Main extends ApplicationAdapter {
 		cubismIns = new ModelInstance(cubism);
 		cubismIns.transform.setToTranslation(0, 3.5f, 0);
 
-		sky = loader.loadModel(Gdx.files.internal("sky/sky.obj"));
+		ModelLoader g3dLoader = new G3dModelLoader(new UBJsonReader());
+		sky = g3dLoader.loadModel(Gdx.files.internal("sky/sky.g3db"));
 		skyIns = new ModelInstance(sky);
-		skyIns.transform.scale(-100, -100, -100); //EI SKAALAUDU EI (täytynee kääntää g3dj:ksi)
-		skyIns.transform.setToTranslation(0, -17, 0);
+		int scale = 4;
+		skyIns.nodes.get(0).scale.set(scale, scale, scale);
+		skyIns.calculateTransforms();
 
 		modelBatch = new ModelBatch();
 
