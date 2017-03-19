@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 
 public class MyInput implements InputProcessor {
     PerspectiveCamera cam;
-    int width, height, action, finger, XAmplitude, YAmplitude, minYAmp;
+    int width, height, action, finger, XAmplitude, YAmplitude, minYAmp, keysXAmp, keysYAmp;
     boolean turn;
     int[] pointerXCoords, pointerYCoords;
 
@@ -22,6 +22,8 @@ public class MyInput implements InputProcessor {
         pointerXCoords = new int[2];
         pointerYCoords = new int[2];
         minYAmp = 100;
+        keysXAmp = 210;
+        keysYAmp = 300;
     }
 
     public void poll(){
@@ -31,10 +33,22 @@ public class MyInput implements InputProcessor {
         }
 
         //NAPPI POHJASSA (ei toimi atm, koska Amp)
-        if(Gdx.input.isKeyPressed(Input.Keys.W)) move(1);
-        if(Gdx.input.isKeyPressed(Input.Keys.A)) move(2);
-        if(Gdx.input.isKeyPressed(Input.Keys.S)) move(1);
-        if(Gdx.input.isKeyPressed(Input.Keys.D)) move(2);
+        if(Gdx.input.isKeyPressed(Input.Keys.W)) {
+            action = 1;
+            YAmplitude = keysYAmp;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.A)) {
+            XAmplitude = -keysYAmp;
+            turn = true;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.S)) {
+            action = 1;
+            YAmplitude = -keysYAmp;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.D)) {
+            XAmplitude = keysXAmp;
+            turn = true;
+        }
 
         //TOUCH
         if(turn) move(2);
@@ -77,6 +91,9 @@ public class MyInput implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
+        XAmplitude = YAmplitude = action = 0;
+        turn = false;
+
         return false;
     }
 

@@ -38,16 +38,17 @@ public class Main extends ApplicationAdapter {
 		input = new MyInput(cam);
 		Gdx.input.setInputProcessor(input);
 
-		ModelLoader loader = new ObjLoader();
-		ground = loader.loadModel(Gdx.files.internal("ground/ground.obj"));
+		//ModelLoader loader = new ObjLoader();
+		ModelLoader g3dLoader = new G3dModelLoader(new UBJsonReader());
+
+		ground = g3dLoader.loadModel(Gdx.files.internal("ground/ground.g3db"));
 		groundIns = new ModelInstance(ground);
 		groundIns.transform.setToTranslation(0, -.3f, 0);
 
-		cubism = loader.loadModel(Gdx.files.internal("cubism/cubism.obj"));
+		cubism = g3dLoader.loadModel(Gdx.files.internal("cubism/cubism.g3db"));
 		cubismIns = new ModelInstance(cubism);
 		cubismIns.transform.setToTranslation(0, 3.5f, 0);
 
-		ModelLoader g3dLoader = new G3dModelLoader(new UBJsonReader());
 		sky = g3dLoader.loadModel(Gdx.files.internal("sky/sky.g3db"));
 		skyIns = new ModelInstance(sky);
 		int scale = 4;
