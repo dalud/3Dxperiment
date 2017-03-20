@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.UBJsonReader;
 
 
@@ -21,6 +22,7 @@ public class Main extends ApplicationAdapter {
 	PerspectiveCamera cam;
 	Model ground, cubism, sky;
 	ModelInstance groundIns, cubismIns, skyIns;
+	Array<ModelInstance> instances, unlit;
 	ModelBatch modelBatch;
 	Environment environment;
 	MyInput input;
@@ -40,20 +42,25 @@ public class Main extends ApplicationAdapter {
 
 		//ModelLoader loader = new ObjLoader();
 		ModelLoader g3dLoader = new G3dModelLoader(new UBJsonReader());
+		instances = new Array<ModelInstance>();
+		unlit = new Array<ModelInstance>();
 
 		ground = g3dLoader.loadModel(Gdx.files.internal("ground/ground.g3db"));
 		groundIns = new ModelInstance(ground);
 		groundIns.transform.setToTranslation(0, -.3f, 0);
+		instances.add(groundIns);
 
 		cubism = g3dLoader.loadModel(Gdx.files.internal("cubism/cubism.g3db"));
 		cubismIns = new ModelInstance(cubism);
 		cubismIns.transform.setToTranslation(0, 3.5f, 0);
+		instances.add(cubismIns);
 
 		sky = g3dLoader.loadModel(Gdx.files.internal("sky/sky.g3db"));
 		skyIns = new ModelInstance(sky);
 		int scale = 4;
 		skyIns.nodes.get(0).scale.set(scale, scale, scale);
 		skyIns.calculateTransforms();
+		unlit.add(skyIns);
 
 		modelBatch = new ModelBatch();
 
@@ -77,9 +84,8 @@ public class Main extends ApplicationAdapter {
 		cubismIns.transform.rotate(0, 1, 0, .2f);
 
 		modelBatch.begin(cam);
-		modelBatch.render(groundIns, environment);
-		modelBatch.render(skyIns);
-		modelBatch.render(cubismIns, environment);
+		modelBatch.render(unlit);
+		modelBatch.render(instances, environment);
 		modelBatch.end();
 	}
 	
