@@ -71,6 +71,7 @@ public class Main extends ApplicationAdapter {
 
 		sappy = Gdx.audio.newMusic(Gdx.files.internal("sounds/sappy.mp3"));
 		sappy.setLooping(true);
+		sappy.setVolume(.3f);
 		sappy.play();
 	}
 
